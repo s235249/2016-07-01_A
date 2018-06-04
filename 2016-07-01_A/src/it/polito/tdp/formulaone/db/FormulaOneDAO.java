@@ -10,6 +10,7 @@ import java.util.List;
 
 import it.polito.tdp.formulaone.model.Circuit;
 import it.polito.tdp.formulaone.model.Constructor;
+import it.polito.tdp.formulaone.model.Driver;
 import it.polito.tdp.formulaone.model.Season;
 
 
@@ -52,7 +53,7 @@ public class FormulaOneDAO {
 			
 			List<Season> list = new ArrayList<>() ;
 			while(rs.next()) {
-				list.add(new Season(Year.of(rs.getInt("year")), rs.getString("url"))) ;
+				list.add(new Season(rs.getInt("year"), rs.getString("url"))) ;
 			}
 			
 			conn.close();
@@ -106,6 +107,33 @@ public class FormulaOneDAO {
 
 			conn.close();
 			return constructors;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("SQL Query Error");
+		}
+	}
+
+	public List<Driver> getAllDriversBySeason(Season s) {
+		
+		String sql = "Select DISTINCT drivers.driverId, forename, surname\n" + 
+				"from drivers, races, results\n" + 
+				"where races.year = ?\n" + 
+				"and results.raceId = races.raceId\n" + 
+				"and results.driverId = drivers.driverId";
+
+		try {
+			Connection conn = ConnectDB.getConnection();
+			PreparedStatement st = conn.prepareStatement(sql);
+			st.setInt(1, s.getYear());
+			ResultSet rs = st.executeQuery();
+
+			List<Driver> drivers = new ArrayList<>();
+			while (rs.next()) {
+				drivers.add(new Driver(rs.getInt("driverId"), rs.getString("forename"), rs.getString("surname")));
+			}
+
+			conn.close();
+			return drivers;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new RuntimeException("SQL Query Error");
