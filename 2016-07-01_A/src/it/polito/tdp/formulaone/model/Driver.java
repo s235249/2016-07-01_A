@@ -4,6 +4,11 @@ import java.time.LocalDate;
 
 public class Driver {
 
+	@Override
+	public String toString() {
+		return "Driver [forename=" + forename + ", surname=" + surname + "]";
+	}
+
 	private int driverId;
 	private String driverRef;
 	private int number;
@@ -99,5 +104,7 @@ public class Driver {
 	public void setUrl(String url) {
 		this.url = url;
 	}
+
+	
 
 }
